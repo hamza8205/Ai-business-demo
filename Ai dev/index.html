@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A helpful business FAQ assistant demo.">
+  <title>Business FAQ Assistant</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="brand-icon" aria-hidden="true">✂</div>
+      <div class="brand-info">
+        <h1 id="business-name">City Barber Shop</h1>
+        <p><span class="status-dot"></span> FAQ assistant · Demo</p>
+      </div>
+      <span class="header-badge">ONLINE</span>
+    </header>
+
+    <section class="welcome">
+      <p class="eyebrow">YOUR LOCAL BUSINESS ASSISTANT</p>
+      <h2>How can we help you?</h2>
+      <p>Ask us about services, prices, opening hours, or appointments.</p>
+    </section>
+
+    <section
+      class="chat"
+      id="chat"
+      aria-label="Chat messages"
+      aria-live="polite"
+    >
+      <div class="message-row bot-row">
+        <div class="avatar" aria-hidden="true">✦</div>
+        <div class="message bot-message">
+          Hi there! 👋 Welcome to City Barber Shop.
+          What would you like to know?
+          <time>Just now</time>
+        </div>
+      </div>
+    </section>
+
+    <section class="suggestions" aria-label="Suggested questions">
+      <p>QUICK QUESTIONS</p>
+      <div class="suggestion-list">
+        <button type="button" class="suggestion"
+          data-question="What services do you offer?">
+          Services
+        </button>
+        <button type="button" class="suggestion"
+          data-question="What are your prices?">
+          Prices
+        </button>
+        <button type="button" class="suggestion"
+          data-question="What are your opening hours?">
+          Opening hours
+        </button>
+        <button type="button" class="suggestion"
+          data-question="Where are you located?">
+          Location
+        </button>
+      </div>
+    </section>
+
+    <form class="chat-form" id="chat-form">
+      <label class="sr-only" for="user-input">Type your question</label>
+      <input
+        id="user-input"
+        name="question"
+        type="text"
+        placeholder="Type your question here..."
+        maxlength="300"
+        autocomplete="off"
+        required
+      >
+      <button class="send-button" type="submit" aria-label="Send message">
+        <span>Send</span>
+        <span aria-hidden="true">➤</span>
+      </button>
+    </form>
+
+    <footer class="footer">
+      <span>Powered by a custom FAQ demo</span>
+      <span>Helpful answers, anytime</span>
+    </footer>
+  </main>
+</body>
+</html>
