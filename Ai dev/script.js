@@ -191,6 +191,12 @@ function normalize(text) {
 
 function getAnswer(question) {
   const normalizedQuestion = normalize(question);
+  const asksAboutColoring = /color|colour|dye/.test(normalizedQuestion);
+const asksAboutKids = /kid|child|children|boy|girl/.test(normalizedQuestion);
+
+if (asksAboutColoring && asksAboutKids) {
+  return `We offer hair coloring, but we don't have confirmed age-specific availability or pricing. Please contact the shop at ${BUSINESS.phone} to confirm both.`;
+}
     // Handle hair-coloring questions about children.
   const asksColoring = [
     "hair coloring",
