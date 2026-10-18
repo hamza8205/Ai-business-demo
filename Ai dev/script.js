@@ -191,6 +191,29 @@ function normalize(text) {
 
 function getAnswer(question) {
   const normalizedQuestion = normalize(question);
+    // Handle hair-coloring questions about children.
+  const asksColoring = [
+    "hair coloring",
+    "hair coloring for children",
+    "hair color",
+    "hair colour",
+    "hair dye"
+  ].some((term) => normalizedQuestion.includes(normalize(term)));
+
+  const mentionsChildren = [
+    "kids",
+    "kid",
+    "children",
+    "child"
+  ].some((term) => normalizedQuestion.split(" ").includes(term));
+
+  if (asksColoring && mentionsChildren) {
+    return (
+      "We offer hair coloring, but we don't have confirmed " +
+      "age-specific availability or pricing. Please contact " +
+      `the shop at ${BUSINESS.phone} to confirm both.`
+    );
+  }
 
   if (!normalizedQuestion) {
     return "Please type a question and I'll do my best to help.";
