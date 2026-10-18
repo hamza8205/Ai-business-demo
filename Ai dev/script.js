@@ -1,9 +1,10 @@
+
 "use strict";
 
 /*
   BUSINESS FAQ ASSISTANT
-  Customize the business details and answers below.
-  This starter version uses keyword matching, not generative AI.
+  Lightweight keyword-based FAQ bot.
+  Customize the BUSINESS object for each client.
 */
 
 const BUSINESS = {
@@ -27,86 +28,148 @@ const BUSINESS = {
     "Please call us to arrange an appointment. Walk-ins are welcome, subject to availability."
 };
 
-// Update the visible business name from the settings above.
-document.getElementById("business-name").textContent = BUSINESS.name;
-document.title = BUSINESS.name + " | FAQ Assistant";
-
+const businessName = document.getElementById("business-name");
 const chat = document.getElementById("chat");
 const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
 
+if (!businessName || !chat || !form || !input) {
+  throw new Error("Chat setup failed. Check the HTML element IDs.");
+}
+
+businessName.textContent = BUSINESS.name;
+document.title = `${BUSINESS.name} | FAQ Assistant`;
+
 const faqs = [
   {
-    keywords: ["hello", "hi", "hey", "salam", "assalam"],
+    id: "greeting",
+    keywords: ["hello", "hi", "hey", "salam", "assalam", "good morning", "good evening"],
     answer: () =>
-      `Hello! 👋 Welcome to ${BUSINESS.name}. How can I help you today?`
+      `Hello! Welcome to ${BUSINESS.name}. How can I help you today?`
   },
   {
-    keywords: ["service", "services", "offer", "provide", "do you do"],
-    answer: () =>
-      `We offer:\n• ${BUSINESS.services.join("\n• ")}\n\nAsk me about prices for any service.`
-  },
-  {
-    keywords: ["price", "prices", "cost", "rate", "charge", "how much", "fee"],
-    answer: () =>
-      `Here is our price list:\n• Haircut: ${BUSINESS.prices.haircut}\n• Beard trim: ${BUSINESS.prices.beard}\n• Haircut + beard: ${BUSINESS.prices.combo}\n• Kids haircut: ${BUSINESS.prices.kids}\n\nPlease confirm prices with the shop before visiting.`
-  },
-  {
-    keywords: ["haircut", "hair cut", "cutting", "trim hair"],
-    answer: () =>
-      `Our regular haircut costs ${BUSINESS.prices.haircut}. Would you also like to know about our other services?`
-  },
-  {
-    keywords: ["beard", "shave", "moustache", "mustache"],
-    answer: () =>
-      `Our beard trim costs ${BUSINESS.prices.beard}. The haircut and beard combo costs ${BUSINESS.prices.combo}.`
-  },
-  {
-    keywords: ["kids", "kid", "child", "children"],
+    id: "kids",
+    keywords: [
+      "kids haircut", "kid haircut", "children haircut",
+      "child haircut", "haircut for kids", "haircut for children",
+      "kids", "children", "child"
+    ],
     answer: () =>
       `Our kids haircut costs ${BUSINESS.prices.kids}. Please contact us if you have a special request.`
   },
   {
-    keywords: ["hour", "hours", "open", "opening", "close", "closing", "time", "when"],
+    id: "combo",
+    keywords: [
+      "haircut and beard", "haircut beard combo",
+      "beard and haircut", "combo price", "combo"
+    ],
+    answer: () =>
+      `Our haircut and beard combo costs ${BUSINESS.prices.combo}.`
+  },
+  {
+    id: "beard",
+    keywords: [
+      "beard trim", "trim beard", "beard price",
+      "shave", "moustache", "mustache", "beard"
+    ],
+    answer: () =>
+      `Our beard trim costs ${BUSINESS.prices.beard}. The haircut and beard combo costs ${BUSINESS.prices.combo}.`
+  },
+  {
+    id: "haircut",
+    keywords: [
+      "regular haircut", "haircut price", "hair cut",
+      "haircut", "hair cutting", "cutting hair", "trim hair"
+    ],
+    answer: () =>
+      `Our regular haircut costs ${BUSINESS.prices.haircut}. Would you also like to know about our other services?`
+  },
+  {
+    id: "prices",
+    keywords: [
+      "price", "prices", "cost", "how much",
+      "rate", "rates", "charges", "fee", "price list"
+    ],
+    answer: () =>
+      `Here is our price list:\n• Haircut: ${BUSINESS.prices.haircut}\n• Beard trim: ${BUSINESS.prices.beard}\n• Haircut + beard: ${BUSINESS.prices.combo}\n• Kids haircut: ${BUSINESS.prices.kids}\n\nPlease confirm prices with the shop before visiting.`
+  },
+  {
+    id: "services",
+    keywords: [
+      "services", "what do you offer", "what do you provide",
+      "what can you do", "service", "offer"
+    ],
+    answer: () =>
+      `We offer:\n• ${BUSINESS.services.join("\n• ")}\n\nAsk me about the price of any service.`
+  },
+  {
+    id: "hours",
+    keywords: [
+      "opening hours", "business hours", "what time",
+      "when do you open", "when do you close",
+      "open", "opening", "close", "closing", "hours", "timing"
+    ],
     answer: () =>
       `Our opening hours are:\n${BUSINESS.hours}\n\nHours may change on holidays, so please confirm before visiting.`
   },
   {
-    keywords: ["where", "location", "address", "located", "directions", "map"],
+    id: "location",
+    keywords: [
+      "where are you", "where is your shop", "location",
+      "address", "directions", "map", "located"
+    ],
     answer: () =>
       `You can find us at ${BUSINESS.address}.\n\nPlease check your maps app for directions.`
   },
   {
-    keywords: ["appointment", "book", "booking", "reserve", "reservation"],
+    id: "appointment",
+    keywords: [
+      "appointment", "book an appointment", "booking",
+      "reserve", "reservation", "walk in", "walk-in"
+    ],
     answer: () => BUSINESS.appointment
   },
   {
-    keywords: ["phone", "number", "contact", "call", "whatsapp"],
+    id: "contact",
+    keywords: [
+      "phone number", "contact number", "telephone",
+      "whatsapp", "call you", "phone", "contact", "number"
+    ],
     answer: () =>
       `You can contact us at ${BUSINESS.phone}.\n\nPlease verify this number before publishing the website.`
   },
   {
-    keywords: ["payment", "pay", "cash", "card", "jazzcash", "easypaisa"],
+    id: "payment",
+    keywords: [
+      "payment", "payment methods", "cash", "card",
+      "jazzcash", "easypaisa", "pay"
+    ],
     answer: () =>
       "Please contact the shop to confirm which payment methods are currently accepted."
   },
   {
-    keywords: ["thank", "thanks", "jazak"],
+    id: "thanks",
+    keywords: ["thank you", "thanks", "jazak", "appreciate"],
     answer: () =>
-      "You're welcome! 😊 Is there anything else you'd like to know?"
+      "You're welcome! Is there anything else you'd like to know?"
+  },
+  {
+    id: "goodbye",
+    keywords: ["goodbye", "bye", "see you", "allah hafiz"],
+    answer: () =>
+      `Thank you for visiting ${BUSINESS.name}. Have a great day!`
   }
 ];
 
-// Convert text into a consistent format for matching.
 function normalize(text) {
   return text
     .toLowerCase()
+    .normalize("NFKC")
     .replace(/[^\p{L}\p{N}\s]/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-// Match a question to the most relevant FAQ.
 function getAnswer(question) {
   const normalizedQuestion = normalize(question);
 
@@ -114,34 +177,46 @@ function getAnswer(question) {
     return "Please type a question and I'll do my best to help.";
   }
 
-  for (const faq of faqs) {
-    const matched = faq.keywords.some((keyword) => {
+  const words = normalizedQuestion.split(" ");
+
+  // Score every FAQ instead of returning the first keyword match.
+  const ranked = faqs.map((faq) => {
+    let score = 0;
+
+    for (const keyword of faq.keywords) {
       const normalizedKeyword = normalize(keyword);
+      if (!normalizedKeyword) continue;
 
-      // Short keywords must match whole words, not word fragments.
-      if (normalizedKeyword.length <= 3) {
-        return normalizedQuestion
-          .split(" ")
-          .includes(normalizedKeyword);
+      const matches = normalizedKeyword.includes(" ")
+        ? normalizedQuestion.includes(normalizedKeyword)
+        : normalizedKeyword.length <= 3
+          ? words.includes(normalizedKeyword)
+          : normalizedQuestion.includes(normalizedKeyword);
+
+      if (matches) {
+        // Specific phrases carry more weight than broad words.
+        score += normalizedKeyword.includes(" ")
+          ? 3 + normalizedKeyword.split(" ").length
+          : 1;
       }
-
-      return normalizedQuestion.includes(normalizedKeyword);
-    });
-
-    if (matched) {
-      return faq.answer();
     }
+
+    return { faq, score };
+  });
+
+  ranked.sort((a, b) => b.score - a.score);
+
+  if (ranked[0].score > 0) {
+    return ranked[0].faq.answer();
   }
 
   return (
-    "Sorry, I don't have an answer for that question yet. " +
-    "Please contact the business directly at " +
-    BUSINESS.phone +
-    " so the team can help you."
+    `I'm sorry, I don't have that information yet. ` +
+    `You can contact ${BUSINESS.name} at ${BUSINESS.phone}, ` +
+    `and the team will be happy to help.`
   );
 }
 
-// Add a message safely as text, rather than inserting HTML.
 function addMessage(text, sender) {
   const row = document.createElement("div");
   row.className = `message-row ${sender}-row`;
@@ -156,15 +231,21 @@ function addMessage(text, sender) {
 
   const bubble = document.createElement("div");
   bubble.className = `message ${sender}-message`;
+
+  // Keep messages as plain text for safer display.
   bubble.appendChild(document.createTextNode(text));
 
   const time = document.createElement("time");
+  time.dateTime = new Date().toISOString();
   time.textContent = new Date().toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit"
   });
+  time.style.display = "block";
+  time.style.marginTop = "6px";
+  time.style.fontSize = "10px";
+  time.style.opacity = "0.7";
 
-  bubble.appendChild(document.createElement("br"));
   bubble.appendChild(time);
   row.appendChild(bubble);
   chat.appendChild(row);
@@ -172,11 +253,13 @@ function addMessage(text, sender) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-// Handle submitted questions.
 function sendQuestion(question) {
   const cleanQuestion = question.trim();
 
-  if (!cleanQuestion) return;
+  if (!cleanQuestion) {
+    input.focus();
+    return;
+  }
 
   addMessage(cleanQuestion, "user");
   addMessage(getAnswer(cleanQuestion), "bot");
@@ -190,9 +273,9 @@ form.addEventListener("submit", (event) => {
   sendQuestion(input.value);
 });
 
-// Make the suggested-question buttons work.
 document.querySelectorAll(".suggestion").forEach((button) => {
   button.addEventListener("click", () => {
-    sendQuestion(button.dataset.question);
+    const question = button.dataset.question;
+    if (question) sendQuestion(question);
   });
 });
