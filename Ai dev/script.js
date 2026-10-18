@@ -67,6 +67,20 @@ const faqs = [
       `Our haircut and beard combo costs ${BUSINESS.prices.combo}.`
   },
   {
+  id: "hair-coloring",
+  keywords: [
+    "hair coloring",
+    "hair colour",
+    "hair color",
+    "coloring hair",
+    "colouring hair",
+    "dye hair",
+    "hair dye"
+  ],
+  answer: () =>
+    "Yes, we offer hair coloring. Please contact the shop for pricing and available options."
+},
+  {
     id: "beard",
     keywords: [
       "beard trim", "trim beard", "beard price",
@@ -139,14 +153,19 @@ const faqs = [
       `You can contact us at ${BUSINESS.phone}.\n\nPlease verify this number before publishing the website.`
   },
   {
-    id: "payment",
-    keywords: [
-      "payment", "payment methods", "cash", "card",
-      "jazzcash", "easypaisa", "pay"
-    ],
-    answer: () =>
-      "Please contact the shop to confirm which payment methods are currently accepted."
-  },
+  id: "payment",
+  keywords: [
+    "payment",
+    "payment methods",
+    "cash",
+    "card",
+    "jazzcash",
+    "easypaisa",
+    "pay"
+  ],
+  answer: () =>
+    "For this demo, we accept Easypaisa and JazzCash. Please contact the shop to confirm payment options before visiting."
+},
   {
     id: "thanks",
     keywords: ["thank you", "thanks", "jazak", "appreciate"],
